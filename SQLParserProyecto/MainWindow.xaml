@@ -1,0 +1,43 @@
+﻿<Window x:Class="SQLParserProyecto.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SQLParserProyecto"
+        mc:Ignorable="d"
+        Title="SQL Parser" Height="450" Width="637" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" ContentRendered="Window_ContentRendered_1">
+    <Grid>
+        <Label Content="Parser SQL&#xD;&#xA;" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="121" Height="36" FontSize="18" FontWeight="Bold"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="402" Margin="406,10,0,0" VerticalAlignment="Top" Width="1"/>
+        <Label Content="Tablas del Servidor" HorizontalAlignment="Left" Margin="422,10,0,0" VerticalAlignment="Top" Width="196" Height="36" FontSize="18" FontWeight="Bold"/>
+        <ListBox x:Name="bases" Margin="430,51,19,22" IsEnabled="True"/>
+        <Label Content="Script SQL&#xA;" HorizontalAlignment="Left" Margin="10,45,0,0" VerticalAlignment="Top" Height="26" Width="112" FontFamily="Roboto" FontWeight="Bold"/>
+        <RichTextBox x:Name="sqlScriptTxt" Margin="10,71,246,178" FontFamily="Roboto" IsEnabled="True" IsUndoEnabled="False" KeyDown="sqlScriptTxt_KeyDown" AcceptsTab="True" IsTabStop="False">
+            <RichTextBox.Resources>
+                <Style TargetType="{x:Type Paragraph}">
+                    <Setter Property="Margin" Value="0"/>
+                </Style>
+            </RichTextBox.Resources>
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text=""/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+        <Button x:Name="verifyBtn" Content="Verificar script SQL" HorizontalAlignment="Left" Margin="34,270,0,0" VerticalAlignment="Top" Width="142" Height="24" Background="#FF29ABE2" Foreground="#FFFFF6F6" BorderBrush="#FFFAF7F7" FontFamily="Roboto" Click="verifyBtn_Click"/>
+        <Button x:Name="executeBtn" Content="Ejecutar script SQL" HorizontalAlignment="Left" Margin="224,270,0,0" VerticalAlignment="Top" Width="142" Height="24" Foreground="White" BorderBrush="White" FontFamily="Roboto" Background="#FF29ABE2" Click="executeBtn_Click">
+            <Button.FocusVisualStyle>
+                <Style/>
+            </Button.FocusVisualStyle>
+        </Button>
+        <RichTextBox x:Name="resultTxt" Margin="10,332,246,22" IsEnabled="False" IsReadOnly="True">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text=""/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+        <Label Content="Resultado" HorizontalAlignment="Left" Margin="10,306,0,0" VerticalAlignment="Top" Height="26" Width="112" FontFamily="Roboto" FontWeight="Bold"/>
+
+    </Grid>
+</Window>
