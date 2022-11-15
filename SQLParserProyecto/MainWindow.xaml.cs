@@ -22,10 +22,12 @@ namespace SQLParserProyecto
     /// </summary>
     public partial class MainWindow : Window
     {
-        protected readonly string serverInstance = "localhost\\MSSQL";
+        protected readonly string serverInstance;
         public MainWindow()
         {
             InitializeComponent();
+            var context = new Context();
+            serverInstance = context.GetInstance();
             bases.Items.Add("Cargando...");
         }
         private void verifyBtn_Click(object sender, RoutedEventArgs e)
@@ -49,9 +51,68 @@ namespace SQLParserProyecto
                 SetTextRTB(resultTxt, "Script SQL correcta.");
             }
         }
-        private void executeBtn_Click(object sender, RoutedEventArgs e)
+        private async void executeBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            
+            var sqlP = GetTextRTB(sqlScriptTxt);
+            var errors = Parser.Parse(sqlP);
+            if (errors != null)
+            {
+                var strBuilder = new StringBuilder();
+                var count = 1;
+                strBuilder.AppendLine("Errores:");
+                foreach (var err in errors)
+                {
+                    strBuilder.AppendLine($"{count} -  {err}");
+                    count++;
+                }
+                SetTextRTB(resultTxt, strBuilder.ToString());
+            }
+            else
+            {
+                var selectedbase = bases.SelectedValue == null ? "master" : bases.SelectedValue.ToString() == "Cargando..." || bases.SelectedValue.ToString() == "Error al recuperar las bases de la instancia indicada" ? "master" : bases.SelectedValue.ToString();
+                var context = new Context(database: selectedbase);
+                using (var conn = context.GetConnection())
+                {
+                    await conn.OpenAsync();
+                    var sql = GetTextRTB(sqlScriptTxt);
+                    using (var command = new SqlCommand(sql, conn))
+                    {
+                        try
+                        {
+                            using var reader = await command.ExecuteReaderAsync();
+                            DataTable table = new DataTable();
+                            if (reader.HasRows)
+                            {
+                                int fields = reader.FieldCount;
+                                for (int i = 0; i < fields; i++)
+                                {
+                                    table.Columns.Add(reader.GetName(i));
+                                }
+                                while (reader.Read())
+                                {
+                                    object[] row = new object[fields];
+                                    for (int i = 0; i < fields; i++)
+                                    {
+                                        if (reader.IsDBNull(i))
+                                            row[i] = "";
+                                        else
+                                            row[i] = reader[i];
+                                    }
+                                    table.Rows.Add(row);
+                                }
+                                Data data = new Data(table);
+                                data.Show();
+                            }
+                            SetTextRTB(resultTxt, "Sentencia ejecutada correctamente.");
+                        }
+                        catch (SqlException err)
+                        {
+                            SetTextRTB(resultTxt, err.Message);
+                        }
+                    }
+                }
+            }
         }
         private string GetTextRTB(RichTextBox rtb)
         {
@@ -89,10 +150,13 @@ namespace SQLParserProyecto
         {
             var bdds = await GetDatabasesAsync(serverInstance);
             if (bdds != null)
+            {
                 foreach (var bdd in bdds)
                 {
                     bases.Items.Add(bdd);
                 }
+                bases.Items.Add("master");
+            }
         }
         private async Task<List<string>?> GetDatabasesAsync(string instance)
         {
@@ -101,13 +165,14 @@ namespace SQLParserProyecto
             string[] bases;
             DataTable dt = new DataTable();
             // Usamos la seguridad integrada de Windows
-            string sCnn = "Server=" + instance + "; database=master; integrated security=yes";
+            var context = new Context();
+            var sCnn = context.GetConnectionString();
 
             // La orden T-SQL para recuperar las bases de master
             string sel = "SELECT name FROM sysdatabases";
             try
             {
-                if (await IsServerConnectedAsync(sCnn))
+                if (await IsServerConnectedAsync())
                 {
                     SqlDataAdapter da = new SqlDataAdapter(sel, sCnn);
                     da.Fill(dt);
@@ -149,9 +214,10 @@ namespace SQLParserProyecto
             }
             return null;
         }
-        private async static Task<bool> IsServerConnectedAsync(string connectionString)
+        private async static Task<bool> IsServerConnectedAsync()
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            var context = new Context();
+            using (var connection = context.GetConnection())
             {
                 try
                 {
@@ -166,6 +232,16 @@ namespace SQLParserProyecto
         }
         private async void Window_ContentRendered_1(object sender, EventArgs e)
         {
+            await GetDatabases();
+        }
+        private void sqlScriptTxt_TextChanged(object sender, TextChangedEventArgs e)
+        {
+        }
+
+        private async void refresh_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            bases.Items.Clear();
+            bases.Items.Add("Cargando...");
             await GetDatabases();
         }
     }
