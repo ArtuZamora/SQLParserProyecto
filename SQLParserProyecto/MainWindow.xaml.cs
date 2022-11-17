@@ -26,9 +26,10 @@ namespace SQLParserProyecto
         public MainWindow()
         {
             InitializeComponent();
-            var context = new Context();
+            using var context = new Context();
             serverInstance = context.GetInstance();
             bases.Items.Add("Cargando...");
+            tables.Items.Add("Seleccione una base y refresque");
         }
         private void verifyBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -71,7 +72,7 @@ namespace SQLParserProyecto
             else
             {
                 var selectedbase = bases.SelectedValue == null ? "master" : bases.SelectedValue.ToString() == "Cargando..." || bases.SelectedValue.ToString() == "Error al recuperar las bases de la instancia indicada" ? "master" : bases.SelectedValue.ToString();
-                var context = new Context(database: selectedbase);
+                using var context = new Context(database: selectedbase);
                 using (var conn = context.GetConnection())
                 {
                     await conn.OpenAsync();
@@ -165,7 +166,7 @@ namespace SQLParserProyecto
             string[] bases;
             DataTable dt = new DataTable();
             // Usamos la seguridad integrada de Windows
-            var context = new Context();
+            using var context = new Context();
             var sCnn = context.GetConnectionString();
 
             // La orden T-SQL para recuperar las bases de master
@@ -216,7 +217,7 @@ namespace SQLParserProyecto
         }
         private async static Task<bool> IsServerConnectedAsync()
         {
-            var context = new Context();
+            using var context = new Context();
             using (var connection = context.GetConnection())
             {
                 try
@@ -237,12 +238,30 @@ namespace SQLParserProyecto
         private void sqlScriptTxt_TextChanged(object sender, TextChangedEventArgs e)
         {
         }
-
         private async void refresh_MouseUp(object sender, MouseButtonEventArgs e)
         {
             bases.Items.Clear();
             bases.Items.Add("Cargando...");
             await GetDatabases();
+        }
+        private void bases_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+        }
+        private async void refreshTables_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            var selectedbase = bases.SelectedValue == null ? "master" : bases.SelectedValue.ToString() == "Cargando..." || bases.SelectedValue.ToString() == "Error al recuperar las bases de la instancia indicada" ? "master" : bases.SelectedValue.ToString();
+            using var context = new Context(database: selectedbase);
+            using var conn = context.GetConnection();
+            await conn.OpenAsync();
+            DataTable t = await conn.GetSchemaAsync("Tables");
+            var rows = t.Rows;
+            tables.Items.Clear();
+            if (rows.Count == 0)
+                tables.Items.Add("No existen tablas en esta base de datos");
+            foreach (DataRow row in rows)
+            {
+                tables.Items.Add(row[2].ToString());
+            }
         }
     }
 }

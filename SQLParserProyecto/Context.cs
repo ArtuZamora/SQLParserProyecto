@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SQLParserProyecto
 {
-    public class Context
+    public class Context : IDisposable
     {
         protected readonly string Instance = "localhost\\MSSQL";
         protected readonly string Database = "master";
@@ -37,6 +37,10 @@ namespace SQLParserProyecto
         public string GetDatabase()
         {
             return Database;
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

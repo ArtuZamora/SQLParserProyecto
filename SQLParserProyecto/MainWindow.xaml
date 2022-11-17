@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SQLParserProyecto"
         mc:Ignorable="d"
-        Title="SQL Parser" Height="450" Width="637" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" ContentRendered="Window_ContentRendered_1">
+        Title="SQL Parser" Height="450" Width="886" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" ContentRendered="Window_ContentRendered_1">
     <Grid>
         <Label Content="Parser SQL&#xD;&#xA;" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="121" Height="36" FontSize="18" FontWeight="Bold"/>
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="402" Margin="406,10,0,0" VerticalAlignment="Top" Width="1"/>
-        <Label Content="Tablas del Servidor" HorizontalAlignment="Left" Margin="416,10,0,0" VerticalAlignment="Top" Width="170" Height="36" FontSize="18" FontWeight="Bold"/>
-        <ListBox x:Name="bases" Margin="424,51,25,22" IsEnabled="True"/>
+        <Label Content="BD del Servidor" HorizontalAlignment="Left" Margin="416,10,0,0" VerticalAlignment="Top" Width="170" Height="36" FontSize="18" FontWeight="Bold"/>
+        <ListBox x:Name="bases" Margin="424,51,266,22" IsEnabled="True" MouseDoubleClick="bases_MouseDoubleClick"/>
         <Label Content="Script SQL&#xA;" HorizontalAlignment="Left" Margin="10,45,0,0" VerticalAlignment="Top" Height="26" Width="112" FontFamily="Roboto" FontWeight="Bold"/>
-        <RichTextBox x:Name="sqlScriptTxt" Margin="10,71,246,178" FontFamily="Roboto" IsEnabled="True" IsUndoEnabled="False" KeyDown="sqlScriptTxt_KeyDown" AcceptsTab="True" IsTabStop="False" TextChanged="sqlScriptTxt_TextChanged">
+        <RichTextBox x:Name="sqlScriptTxt" Margin="10,71,520,178" FontFamily="Roboto" IsEnabled="True" IsUndoEnabled="False" KeyDown="sqlScriptTxt_KeyDown" AcceptsTab="True" IsTabStop="False" TextChanged="sqlScriptTxt_TextChanged">
             <RichTextBox.Resources>
                 <Style TargetType="{x:Type Paragraph}">
                     <Setter Property="Margin" Value="0"/>
@@ -30,7 +30,7 @@
                 <Style/>
             </Button.FocusVisualStyle>
         </Button>
-        <RichTextBox x:Name="resultTxt" Margin="10,332,246,22" IsEnabled="False" IsReadOnly="True">
+        <RichTextBox x:Name="resultTxt" Margin="10,332,520,22" IsEnabled="False" IsReadOnly="True">
             <FlowDocument>
                 <Paragraph>
                     <Run Text=""/>
@@ -39,6 +39,9 @@
         </RichTextBox>
         <Label Content="Resultado" HorizontalAlignment="Left" Margin="10,306,0,0" VerticalAlignment="Top" Height="26" Width="112" FontFamily="Roboto" FontWeight="Bold"/>
         <Image x:Name="refresh" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" Width="17" Source="/refresh-icon.png" Margin="586,20,0,0" MouseUp="refresh_MouseUp" Cursor="Hand"/>
+        <Label Content="Tablas de la base" HorizontalAlignment="Left" Margin="664,10,0,0" VerticalAlignment="Top" Width="170" Height="36" FontSize="18" FontWeight="Bold"/>
+        <ListBox x:Name="tables" Margin="664,51,26,22" IsEnabled="True"/>
+        <Image x:Name="refreshTables" HorizontalAlignment="Left" Height="16" VerticalAlignment="Top" Width="17" Source="/refresh-icon.png" Margin="834,20,0,0" Cursor="Hand" MouseUp="refreshTables_MouseUp"/>
 
     </Grid>
 </Window>
